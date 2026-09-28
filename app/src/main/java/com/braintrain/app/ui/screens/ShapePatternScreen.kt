@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-//import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,7 +41,9 @@ import com.braintrain.app.ui.theme.FredokaFallback
 import com.braintrain.app.ui.theme.Lavender
 import kotlinx.coroutines.delay
 
-/** Find the next shape in the pattern*/
+/**
+ * Shape pattern game.
+ */
 @Composable
 fun ShapePatternScreen(
     timeLeft: Int,
@@ -58,7 +59,10 @@ fun ShapePatternScreen(
     var wrongShape by remember { mutableStateOf<ShapeName?>(null) }
     var showComplete by remember { mutableStateOf(false) }
 
-    val level = SHAPE_LEVELS[levelIndex]
+    // Shuffled once per round (reset naturally each time this screen is
+    // re-entered, since a fresh round unmounts/remounts the composable).
+    val levels = remember { SHAPE_LEVELS.shuffled() }
+    val level = levels[levelIndex]
 
     fun handleSelect(shape: ShapeName) {
         if (gameState != AnswerState.PLAYING || showTimeUp || showComplete) return

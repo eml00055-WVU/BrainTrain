@@ -42,7 +42,7 @@ import com.braintrain.app.ui.theme.FredokaFallback
 import com.braintrain.app.ui.theme.Lavender
 import kotlinx.coroutines.delay
 
-/** "Find the synonym" mini-game. Direct port of SynonymGame() in App.tsx. */
+/** "Find the synonym" mini-game. */
 @Composable
 fun SynonymScreen(
     timeLeft: Int,
@@ -58,7 +58,10 @@ fun SynonymScreen(
     var wrongOption by remember { mutableStateOf<String?>(null) }
     var showComplete by remember { mutableStateOf(false) }
 
-    val level = SYNONYM_LEVELS[levelIndex]
+    // Shuffled once per round (reset naturally each time this screen is
+    // re-entered, since a fresh round unmounts/remounts the composable).
+    val levels = remember { SYNONYM_LEVELS.shuffled() }
+    val level = levels[levelIndex]
 
     fun handleSelect(option: String) {
         if (gameState != AnswerState.PLAYING || showTimeUp || showComplete) return

@@ -37,7 +37,7 @@ import com.braintrain.app.ui.theme.FredokaFallback
 import com.braintrain.app.ui.theme.Lavender
 import kotlinx.coroutines.delay
 
-/** "Solve the equation" mini-game*/
+/** "Solve the equation" mini-game. */
 @Composable
 fun EquationScreen(
     timeLeft: Int,
@@ -53,7 +53,10 @@ fun EquationScreen(
     var wrongOption by remember { mutableStateOf<Int?>(null) }
     var showComplete by remember { mutableStateOf(false) }
 
-    val level = EQUATION_LEVELS[levelIndex]
+    // Shuffled once per round (reset naturally each time this screen is
+    // re-entered, since a fresh round unmounts/remounts the composable).
+    val levels = remember { EQUATION_LEVELS.shuffled() }
+    val level = levels[levelIndex]
 
     fun handleSelect(option: Int) {
         if (gameState != AnswerState.PLAYING || showTimeUp || showComplete) return
