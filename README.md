@@ -7,6 +7,29 @@ screen and mode-select screen have been ported faithfully: same levels,
 same colors, same scoring/timer rules (60s countdown per round), same
 "time's up" / "complete" overlays.
 
+## Local profiles & high scores
+
+BrainTrain now has a lightweight, on-device account system:
+
+- Tapping **Play** (when signed out) or **Login** opens a profile picker —
+  pick an existing local profile or type a new name to create one. No
+  password, no network call; it's a device-local pointer stored via
+  Jetpack DataStore.
+- Each profile's personal-best score per game (Shapes / Equations /
+  Synonyms) is saved to a local Room (SQLite) database the moment a round
+  ends, whether by finishing all levels or by the timer running out.
+- **Leaderboards** shows every local profile that has ever signed in on
+  this device, ranked by best score, with a tab per game.
+- Switching profiles is instant ("Switch player" on the title screen) —
+  no logout/login round trip, since nothing leaves the device.
+
+This is intentionally the "local-only" option: nothing syncs across
+devices. The data layer is isolated in `app/src/main/java/com/braintrain/app/data/`
+(`PlayerEntity`, `PlayerDao`, `AppDatabase`, `CurrentUserStore`,
+`PlayerRepository`) so swapping in real cloud accounts later (Firebase,
+Play Games Services, or a custom backend) means replacing that one
+package — the UI layer only talks to `PlayerRepository`.
+
 ## Opening the project
 
 1. Unzip this folder.
@@ -62,17 +85,24 @@ same colors, same scoring/timer rules (60s countdown per round), same
 ```
 app/src/main/java/com/braintrain/app/
   MainActivity.kt          — entry point
-  BrainTrainApp.kt          — screen state machine + timer
+  BrainTrainApp.kt          — screen state machine + timer + account wiring
+  data/
+    PlayerEntity.kt          — Room entity: one row per local profile
+    PlayerDao.kt               — Room queries
+    AppDatabase.kt               — Room database singleton
+    CurrentUserStore.kt            — DataStore: which profile is signed in
+    PlayerRepository.kt              — single entry point the UI calls
   model/
     Shapes.kt               — ShapeName enum + Canvas-drawn icons
-    GameModels.kt            — Screen/AnswerState enums, level data classes
-    Levels.kt                 — all level content + shared colors
+    GameModels.kt             — Screen/AnswerState enums, level data classes
+    Levels.kt                   — all level content + shared colors
   ui/
     theme/                     — colors, type, MaterialTheme wrapper
     components/                — TimerBadge, ScoreBadge, ProgressDots,
                                   AnswerTile (shake/pop animations),
-                                  ResultOverlay (time's up / complete)
+                                  ResultOverlay (time's up / complete),
+                                  ProfileDialog (sign in / switch player)
     screens/                    — TitleScreen, ModeSelectScreen,
                                    ShapePatternScreen, EquationScreen,
-                                   SynonymScreen
+                                   SynonymScreen, LeaderboardScreen
 ```

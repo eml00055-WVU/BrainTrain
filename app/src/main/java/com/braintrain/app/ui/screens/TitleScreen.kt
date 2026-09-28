@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-//import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +32,12 @@ import com.braintrain.app.ui.theme.FredokaFallback
 import com.braintrain.app.ui.theme.Lavender
 
 @Composable
-fun TitleScreen(onPlay: () -> Unit) {
+fun TitleScreen(
+    activeUsername: String?,
+    onPlay: () -> Unit,
+    onLoginClick: () -> Unit,
+    onLeaderboardClick: () -> Unit,
+) {
     Column(modifier = Modifier.fillMaxSize()) {
 
         // ── TOP: hero ────────────────────────────────────────────────
@@ -48,8 +52,6 @@ fun TitleScreen(onPlay: () -> Unit) {
             val w = this.maxWidth
             val h = this.maxHeight
 
-            // Floating shape decorations
-            // TODO: Animate similar to prototype
             FLOATERS.forEach { f ->
                 Box(
                     modifier = Modifier
@@ -61,6 +63,29 @@ fun TitleScreen(onPlay: () -> Unit) {
             }
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                // Icon cluster
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    listOf(ShapeName.SQUARE, ShapeName.CIRCLE, ShapeName.TRIANGLE).forEach { s ->
+                        Box(
+                            modifier = Modifier
+                                .size(52.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(Color(0x14FFFFFF)),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            ShapeIcon(name = s, size = 30.dp)
+                        }
+                    }
+                    Box(
+                        modifier = Modifier
+                            .size(52.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(Color(0x477C5CFC)),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text("?", color = Color(0xFF7C5CFC), fontSize = 24.sp, fontWeight = FontWeight.Bold, fontFamily = FredokaFallback)
+                    }
+                }
 
                 Spacer(Modifier.height(20.dp))
 
@@ -97,9 +122,35 @@ fun TitleScreen(onPlay: () -> Unit) {
         ) {
             PrimaryButton(text = "▶  Play", onClick = onPlay)
             Spacer(Modifier.height(16.dp))
-            SecondaryButton(text = "Login", onClick = {})
-            Spacer(Modifier.height(16.dp))
-            GhostButton(text = "🏆  Leaderboards", onClick = {})
+            if (activeUsername != null) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                    Text(
+                        "Playing as ",
+                        color = Color(0x731C1040),
+                        fontSize = 14.sp,
+                    )
+                    Text(
+                        activeUsername,
+                        color = Color(0xFF1C1040),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FredokaFallback,
+                    )
+                }
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "Switch player",
+                    color = Color(0xFF7C5CFC),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.clickable { onLoginClick() },
+                )
+                Spacer(Modifier.height(12.dp))
+            } else {
+                SecondaryButton(text = "Login", onClick = onLoginClick)
+                Spacer(Modifier.height(16.dp))
+            }
+            GhostButton(text = "🏆  Leaderboards", onClick = onLeaderboardClick)
         }
     }
 }

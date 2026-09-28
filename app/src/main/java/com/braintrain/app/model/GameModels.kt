@@ -1,7 +1,7 @@
 package com.braintrain.app.model
 
 /** Which full screen is currently showing. */
-enum class Screen { TITLE, MODE_SELECT, SHAPES, EQUATIONS, SYNONYMS }
+enum class Screen { TITLE, MODE_SELECT, SHAPES, EQUATIONS, SYNONYMS, LEADERBOARD }
 
 /** What state is the current answer in */
 enum class AnswerState { PLAYING, CORRECT, WRONG }
