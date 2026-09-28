@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">BrainTrain</string>
-    <style name="Theme.BrainTrain" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:statusBarColor">#1c1040</item>
-        <item name="android:windowBackground">#1c1040</item>
-    </style>
-</resources>
