@@ -7,6 +7,25 @@ screen and mode-select screen have been ported faithfully: same levels,
 same colors, same scoring/timer rules (60s countdown per round), same
 "time's up" / "complete" overlays.
 
+## Scoring
+
+Score is now points-based instead of a flat count of correct answers
+(`model/Scoring.kt`):
+
+- **+100** for each correct answer.
+- **−40** for each incorrect answer (score never drops below 0 during play).
+- **Speed bonus:** clearing every level before time runs out awards
+  `5 × seconds remaining` as a bonus the instant the round completes — the
+  faster you finish, the more time is left on the clock, and the bigger
+  the bonus.
+- Running out of the clock before finishing means no speed bonus, but
+  whatever points were earned from correct/incorrect answers still count
+  and are still saved as that round's result.
+
+The result overlays show both the raw "X of N solved" count and the
+points total (e.g. "4 of 5 solved · Score 380") so progress and score
+stay easy to tell apart.
+
 ## Local profiles & high scores
 
 BrainTrain now has a lightweight, on-device account system:
@@ -35,8 +54,7 @@ package — the UI layer only talks to `PlayerRepository`.
 1. Unzip this folder.
 2. Open Android Studio → **File → Open** → select the unzipped `BrainTrain` folder.
 3. **About the Gradle wrapper:** this project ships without `gradlew` /
-   `gradlew.bat` / `gradle-wrapper.jar` (they're binary/generated files I
-   couldn't produce outside Android Studio). When you open the project,
+   `gradlew.bat` / `gradle-wrapper.jar`. When you open the project,
    Android Studio will detect this and offer to **create the Gradle
    wrapper automatically** — click OK/accept when prompted, or run
    `gradle wrapper` once if you have a system Gradle install. After that,
@@ -58,51 +76,3 @@ package — the UI layer only talks to `PlayerRepository`.
   Equations, Synonyms), each reproducing the layout, colors, scoring, and
   "wrong answer shake" / "correct answer pop" animations from the
   original JSX.
-
-## Known differences from the web prototype
-
-- **No phone-mockup bezel.** The original wrapped everything in a fake
-  "phone shell" `<div>` because it was rendering inside a browser demo.
-  On a real device the app already fills the screen, so that wrapper was
-  dropped.
-- **Fonts.** The prototype uses Google Fonts "Fredoka" (headings/numbers)
-  and "Nunito" (body text), neither of which ships on Android. The app
-  currently falls back to the system sans-serif font. To match exactly:
-  download the `.ttf` files, drop them in `app/src/main/res/font/`, and
-  wire them up in `ui/theme/Type.kt` (`FredokaFallback` / `NunitoFallback`).
-- **"Login" and "Leaderboards" buttons** on the title screen are
-  present but non-functional, same as in the original prototype (no
-  backend existed there either).
-- **Title-screen floating shapes** are statically positioned rather than
-  looping/fading, since that was a minor decorative touch — easy to
-  animate further with `rememberInfiniteTransition` if you want it back.
-- The unused shadcn/Radix UI component library and MUI dependency that
-  Figma Make scaffolds by default were not ported — the original app
-  never actually used them.
-
-## Project structure
-
-```
-app/src/main/java/com/braintrain/app/
-  MainActivity.kt          — entry point
-  BrainTrainApp.kt          — screen state machine + timer + account wiring
-  data/
-    PlayerEntity.kt          — Room entity: one row per local profile
-    PlayerDao.kt               — Room queries
-    AppDatabase.kt               — Room database singleton
-    CurrentUserStore.kt            — DataStore: which profile is signed in
-    PlayerRepository.kt              — single entry point the UI calls
-  model/
-    Shapes.kt               — ShapeName enum + Canvas-drawn icons
-    GameModels.kt             — Screen/AnswerState enums, level data classes
-    Levels.kt                   — all level content + shared colors
-  ui/
-    theme/                     — colors, type, MaterialTheme wrapper
-    components/                — TimerBadge, ScoreBadge, ProgressDots,
-                                  AnswerTile (shake/pop animations),
-                                  ResultOverlay (time's up / complete),
-                                  ProfileDialog (sign in / switch player)
-    screens/                    — TitleScreen, ModeSelectScreen,
-                                   ShapePatternScreen, EquationScreen,
-                                   SynonymScreen, LeaderboardScreen
-```
