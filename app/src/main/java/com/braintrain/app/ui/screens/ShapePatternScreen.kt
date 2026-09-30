@@ -42,7 +42,7 @@ import com.braintrain.app.ui.theme.Lavender
 import kotlinx.coroutines.delay
 
 /**
- * Shape pattern game.
+ * Shape pattern matching game.
  */
 @Composable
 fun ShapePatternScreen(
@@ -50,6 +50,7 @@ fun ShapePatternScreen(
     showTimeUp: Boolean,
     score: Int,
     onCorrectAnswer: () -> Unit,
+    onWrongAnswer: () -> Unit,
     onRoundComplete: () -> Unit,
     onRestart: () -> Unit,
 ) {
@@ -73,6 +74,7 @@ fun ShapePatternScreen(
         } else {
             gameState = AnswerState.WRONG
             wrongShape = shape
+            onWrongAnswer()
         }
     }
 
@@ -245,7 +247,7 @@ fun ShapePatternScreen(
             ResultOverlay(
                 emoji = "⏰",
                 title = "Time's Up!",
-                subtitle = "$score of ${SHAPE_LEVELS.size} patterns solved",
+                subtitle = "$levelIndex of ${levels.size} solved  ·  Score $score",
                 accentColor = Color(0xFF7C5CFC),
                 buttonLabel = "Try Again",
                 onButtonClick = onRestart,
@@ -256,7 +258,7 @@ fun ShapePatternScreen(
             ResultOverlay(
                 emoji = "🎉",
                 title = "You nailed it!",
-                subtitle = "$score of ${SHAPE_LEVELS.size} patterns solved",
+                subtitle = "All ${levels.size} solved  ·  Score $score",
                 accentColor = Color(0xFF7C5CFC),
                 buttonLabel = "Play Again",
                 onButtonClick = onRestart,

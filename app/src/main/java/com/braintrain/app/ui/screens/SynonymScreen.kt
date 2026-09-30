@@ -42,13 +42,16 @@ import com.braintrain.app.ui.theme.FredokaFallback
 import com.braintrain.app.ui.theme.Lavender
 import kotlinx.coroutines.delay
 
-/** "Find the synonym" mini-game. */
+/**
+ * Synonym matching game.
+ */
 @Composable
 fun SynonymScreen(
     timeLeft: Int,
     showTimeUp: Boolean,
     score: Int,
     onCorrectAnswer: () -> Unit,
+    onWrongAnswer: () -> Unit,
     onRoundComplete: () -> Unit,
     onRestart: () -> Unit,
 ) {
@@ -72,6 +75,7 @@ fun SynonymScreen(
         } else {
             gameState = AnswerState.WRONG
             wrongOption = option
+            onWrongAnswer()
         }
     }
 
@@ -221,7 +225,7 @@ fun SynonymScreen(
             ResultOverlay(
                 emoji = "⏰",
                 title = "Time's Up!",
-                subtitle = "$score of ${SYNONYM_LEVELS.size} synonyms found",
+                subtitle = "$levelIndex of ${levels.size} found  ·  Score $score",
                 accentColor = Color(0xFF6BCB77),
                 buttonLabel = "Try Again",
                 onButtonClick = onRestart,
@@ -232,7 +236,7 @@ fun SynonymScreen(
             ResultOverlay(
                 emoji = "🎉",
                 title = "Wordsmith!",
-                subtitle = "All ${SYNONYM_LEVELS.size} synonyms found!",
+                subtitle = "All ${levels.size} found  ·  Score $score",
                 accentColor = Color(0xFF6BCB77),
                 buttonLabel = "Play Again",
                 onButtonClick = onRestart,

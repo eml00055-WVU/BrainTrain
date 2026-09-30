@@ -89,6 +89,7 @@ fun TimerBadge(timeLeft: Int, modifier: Modifier = Modifier) {
     }
 }
 
+/** Displays score */
 @Composable
 fun ScoreBadge(score: Int, modifier: Modifier = Modifier) {
     Row(
@@ -110,7 +111,7 @@ fun ScoreBadge(score: Int, modifier: Modifier = Modifier) {
     }
 }
 
-/** Progress dots row — active dot widens, completed dots turn green. */
+/** Progress dots row, completed dots turn green. */
 @Composable
 fun ProgressDots(
     total: Int,
@@ -140,9 +141,7 @@ fun ProgressDots(
     }
 }
 
-/**
- * A single answer tile.
- */
+/** A single answer tile. */
 @Composable
 fun AnswerTile(
     isCorrect: Boolean,

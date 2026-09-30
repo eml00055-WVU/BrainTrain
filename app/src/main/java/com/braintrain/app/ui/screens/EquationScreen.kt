@@ -37,13 +37,14 @@ import com.braintrain.app.ui.theme.FredokaFallback
 import com.braintrain.app.ui.theme.Lavender
 import kotlinx.coroutines.delay
 
-/** "Solve the equation" mini-game. */
+/** Solve the equation game. */
 @Composable
 fun EquationScreen(
     timeLeft: Int,
     showTimeUp: Boolean,
     score: Int,
     onCorrectAnswer: () -> Unit,
+    onWrongAnswer: () -> Unit,
     onRoundComplete: () -> Unit,
     onRestart: () -> Unit,
 ) {
@@ -67,6 +68,7 @@ fun EquationScreen(
         } else {
             gameState = AnswerState.WRONG
             wrongOption = option
+            onWrongAnswer()
         }
     }
 
@@ -209,7 +211,7 @@ fun EquationScreen(
             ResultOverlay(
                 emoji = "⏰",
                 title = "Time's Up!",
-                subtitle = "$score of ${EQUATION_LEVELS.size} equations solved",
+                subtitle = "$levelIndex of ${levels.size} solved  ·  Score $score",
                 accentColor = Color(0xFF7C5CFC),
                 buttonLabel = "Try Again",
                 onButtonClick = onRestart,
@@ -220,7 +222,7 @@ fun EquationScreen(
             ResultOverlay(
                 emoji = "🎉",
                 title = "Nailed it!",
-                subtitle = "All ${EQUATION_LEVELS.size} equations solved!",
+                subtitle = "All ${levels.size} solved  ·  Score $score",
                 accentColor = Color(0xFF7C5CFC),
                 buttonLabel = "Play Again",
                 onButtonClick = onRestart,

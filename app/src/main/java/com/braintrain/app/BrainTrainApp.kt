@@ -16,8 +16,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import com.braintrain.app.data.PlayerRepository
+import com.braintrain.app.model.PENALTY_PER_WRONG
+import com.braintrain.app.model.POINTS_PER_CORRECT
 import com.braintrain.app.model.Screen
 import com.braintrain.app.model.TIMER_START_SECONDS
+import com.braintrain.app.model.speedBonus
 import com.braintrain.app.ui.components.ProfileDialog
 import com.braintrain.app.ui.screens.EquationScreen
 import com.braintrain.app.ui.screens.LeaderboardScreen
@@ -31,9 +34,9 @@ import kotlinx.coroutines.launch
 
 /**
  * Root composable. Owns the screen-switching state machine, the shared
- * countdown timer (as before), and now also the local-profile / high-score
- * layer: which device profile is signed in, the list of all local profiles
- * (for the leaderboard), and persisting a personal-best score whenever a
+ * countdown timer and also the local-profile / high-score
+ * layer. Tracks which device profile is signed in, the list of all local profiles
+ * (for the leaderboard) and persisting a personal-best score whenever a
  * round ends.
  */
 @Composable
@@ -52,14 +55,11 @@ fun BrainTrainApp() {
     var roundComplete by remember { mutableStateOf(false) }
 
     var showProfileDialog by remember { mutableStateOf(false) }
-    // What to do once the player picks/creates a profile — e.g. resume
-    // heading into Mode Select if they tapped Play while signed out.
     var afterLoginAction by remember { mutableStateOf<() -> Unit>({}) }
 
     val isActiveGame = screen == Screen.SHAPES || screen == Screen.EQUATIONS || screen == Screen.SYNONYMS
 
-    // Tick down once per second while a game is active — mirrors the
-    // setTimeout-based countdown effect in App.tsx.
+    // Tick down once per second while a game is active
     LaunchedEffect(isActiveGame, showTimeUp, roundComplete) {
         if (!isActiveGame) return@LaunchedEffect
         while (!showTimeUp && !roundComplete && timeLeft > 0) {
@@ -71,10 +71,16 @@ fun BrainTrainApp() {
         }
     }
 
-    // Persist a high score the moment a round ends, whether by finishing
-    // every level (roundComplete) or by the clock running out (showTimeUp).
+    /* Persist a high score the moment a round ends, whether by finishing
+     every level (roundComplete) or by the clock running out (showTimeUp).
+     A round that's fully cleared also earns a speed bonus based on how
+     much time was left. Finishing faster leaves more time on the clock,
+     which means a bigger bonus. */
     LaunchedEffect(showTimeUp, roundComplete) {
         if (!isActiveGame) return@LaunchedEffect
+        if (roundComplete) {
+            score += speedBonus(timeLeft)
+        }
         if (showTimeUp || roundComplete) {
             val username = activeUsername ?: return@LaunchedEffect
             repository.recordScore(username, screen, score)
@@ -133,7 +139,8 @@ fun BrainTrainApp() {
                 timeLeft = timeLeft,
                 showTimeUp = showTimeUp,
                 score = score,
-                onCorrectAnswer = { score += 1 },
+                onCorrectAnswer = { score += POINTS_PER_CORRECT },
+                onWrongAnswer = { score = (score - PENALTY_PER_WRONG).coerceAtLeast(0) },
                 onRoundComplete = { roundComplete = true },
                 onRestart = ::restart,
             )
@@ -142,7 +149,8 @@ fun BrainTrainApp() {
                 timeLeft = timeLeft,
                 showTimeUp = showTimeUp,
                 score = score,
-                onCorrectAnswer = { score += 1 },
+                onCorrectAnswer = { score += POINTS_PER_CORRECT },
+                onWrongAnswer = { score = (score - PENALTY_PER_WRONG).coerceAtLeast(0) },
                 onRoundComplete = { roundComplete = true },
                 onRestart = ::restart,
             )
@@ -151,7 +159,8 @@ fun BrainTrainApp() {
                 timeLeft = timeLeft,
                 showTimeUp = showTimeUp,
                 score = score,
-                onCorrectAnswer = { score += 1 },
+                onCorrectAnswer = { score += POINTS_PER_CORRECT },
+                onWrongAnswer = { score = (score - PENALTY_PER_WRONG).coerceAtLeast(0) },
                 onRoundComplete = { roundComplete = true },
                 onRestart = ::restart,
             )
