@@ -12,9 +12,9 @@ private val ACTIVE_USERNAME_KEY = stringPreferencesKey("active_username")
 
 /**
  * Remembers which local profile is "signed in" across app launches. This is
- * intentionally just a device-local pointer — no network account, no
- * password. Swapping this out for real cloud auth later only means
- * replacing this file + PlayerRepository's sign-in logic.
+ * intentionally just a device-local pointer Swapping this out for real cloud
+ * authentication later should only require replacing this
+ * file and PlayerRepository's sign-in logic.
  */
 class CurrentUserStore(private val context: Context) {
 

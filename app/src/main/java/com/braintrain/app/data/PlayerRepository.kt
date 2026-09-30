@@ -5,7 +5,7 @@ import com.braintrain.app.model.Screen
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Single entry point the UI talks to for local-profile accounts + high
+ * Single entry point the UI talks to for local-profile accounts and high
  * scores. Wraps Room (persisted player records) and DataStore (which
  * profile is currently active).
  */

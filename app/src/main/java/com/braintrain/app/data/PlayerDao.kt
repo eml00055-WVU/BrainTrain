@@ -7,6 +7,9 @@ import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Basic selection and insertion queries
+ */
 @Dao
 interface PlayerDao {
 

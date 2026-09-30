@@ -40,9 +40,8 @@ import com.braintrain.app.ui.theme.Accent
 import com.braintrain.app.ui.theme.FredokaFallback
 
 /**
- * Local device "sign in" — pick an existing profile or create a new one by
- * name. No password, no network: this is what "tied to a user account"
- * means for the local-only persistence option. High scores are stored per
+ * Local device "sign in". Pick an existing profile or create a new one by
+ * name. No password or network connectivity at this point. High scores are stored per
  * username in Room (see PlayerRepository).
  */
 @Composable
